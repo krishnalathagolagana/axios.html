@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Cat Gallery</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-items: center;      
+    background-image:url(./cat\ image.jfif);      
+    background-repeat: no-repeat;
+     background-size: cover;
+    background-position: center center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #444;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .card .info {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .loading {
+      margin-top: 40px;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1> Cute Cat's Gallery</h1>
+
+  <div class="loading" id="loading">Loading cats…</div>
+
+  <div class="gallery" id="gallery" style="display: none;">
+  </div>
+
+  <script>
+    const apiUrl = "https://api.thecatapi.com/v1/images/search?limit=10";
+
+    function loadCatImages() {
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(catData => {
+          const gallery = document.getElementById("gallery");
+
+          catData.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const img = document.createElement("img");
+            img.src = item.url;
+            img.alt = item.id || "Cute cat";
+
+            const info = document.createElement("div");
+            info.className = "info";
+            info.textContent = item.breeds && item.breeds.length > 0
+              ? item.breeds[0].name
+              : "Cat";
+
+            card.appendChild(img);
+            card.appendChild(info);
+            gallery.appendChild(card);
+          });
+
+          document.getElementById("loading").style.display = "none";
+          gallery.style.display = "grid";
+        })
+        .catch(error => {
+          console.error("Error fetching cat images:", error);
+          document.getElementById("loading").textContent = "Could not load cat images.";
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCatImages);
+  </script>
+
+</body>
+</html>
